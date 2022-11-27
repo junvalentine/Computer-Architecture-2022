@@ -1,21 +1,25 @@
 .data
-	array: .word  	592,-377,-148,114,-467,861,-923,822,-497,8,862,292,-802,-216,-479,-597,613,461,43,290,-120,-766,-197,-822,-536,-666,115,-133,-84,577,-984,809,117,948,-577,-650,-253,-886,303,-382,-389,-951,364,510,-274,-233,817,561,-650,-941          	# input
-	size:  .word	50			# size of input
+	array: .word  	9,8,7,6,5,4,3,2,1         	# input
+	size:  .word	9			# size of input
 	from: .word	0			# from index 
-	to: .word	49			# to index 
+	to: .word	8			# to index
+	 
 	newl: .asciiz "\n"			# newline
 	space: .asciiz " "			# space
 	text: .asciiz  "Array after sort: " 	# text
 	text1: .asciiz "Array before sort: "	# text
-	text2: .asciiz "step "			# text
+	text2: .asciiz "Step "			# text
 	text3: .asciiz ":"			# text
+	bracket: .asciiz "["			# open bracket
+	bracket1: .asciiz "]"			# close bracket
 	tmp: .word 0:50				# temporary array
+	
 .text
 
 main:				# main
 	la $s0,array		# load array
-	lw $a1,from		# from index or low
-	lw $a2,to		# to index or high
+	lw $a1,from		# load from index or low
+	lw $a2,to		# load to index or high
 	addi $s4,$0,1		# set step number
 	
 	la $a0,text1		# print input
@@ -43,9 +47,18 @@ main:				# main
 print:				# print helper function
 	lw $t0,size		# load size to t0
 	add $t1,$0,$0		# set $t1 as index of array at 0
-for:	
+for:		
+	bne $t1,$a1,cont	# for each step if index equal from , print bracket to mark the start of the segment 
+				# that has just been sorted, else move to print the value of array
+	la $a0,bracket		# print open bracket
+	li $v0,4
+	syscall
+	la $a0,space		# print space
+	li $v0,4
+	syscall
+cont:
 	sll $t2,$t1,2		
-	add $t2,$t2,$s0		# add offset to the address of a[0] -> $t2= address of array[i]
+	add $t2,$t2,$s0		# add offset to the address of a[0] -> $t2 = address of array[i]
 	
 	lw  $a0,0($t2)		# print a[i]
 	li $v0,1
@@ -55,6 +68,15 @@ for:
 	li $v0,4
 	syscall
 	
+	bne $t1,$a2,cont1	# for each step if index equal from , print bracket to mark the end of the segment 
+				# that has just been sorted, else move to cont1
+	la $a0,bracket1		# print close bracket
+	li $v0,4
+	syscall
+	la $a0,space		# print space
+	li $v0,4
+	syscall
+cont1:
 	addi $t1,$t1,1		# increase index
 	beq $t1,$t0,return	# if index equal size, return
 	j for			# else continue the print process
@@ -113,7 +135,7 @@ mergesort:			# mergesort
 	addi $sp,$sp,16		# restore stack pointer
 	jr $ra			
 	
-	
+
 merge:				# merge 2 array fi and se
 	la $s1,tmp		# set s1 as a temporary array 'tmp'
 	
