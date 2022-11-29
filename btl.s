@@ -88,7 +88,7 @@ return:				# return helper function
 	
 mergesort:			# mergesort
 	slt $t0, $a1, $a2	
-	bne $t0, 1, return	# if low < high , return 
+	bne $t0, 1, return	# if low >= high , return 
 	
 	add $a3,$a1,$a2		# compute mid=(low+high)/2 
 	srl $a3,$a3,1	
